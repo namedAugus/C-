@@ -1,0 +1,608 @@
+syntax = "proto2"; 
+
+//SysMsg  ping-pong ===============================开始=====================================
+message MsgPing{
+
+}
+message MsgPong{
+
+}
+
+//SysMsg  ping-pong ===============================结束=====================================
+
+//SyncMsg  同步协议 ================================开始=====================================
+message MsgSyncTank{
+	optional float x = 1;
+    optional float y = 2;
+    optional float z = 3;
+    optional float ex = 4;
+    optional float ey = 5;
+    optional float ez = 6;
+    optional float turretY = 7;
+    //服务端传递的时候填写
+    optional string id = 8; //坦克id(玩家id)
+}
+//开火协议
+message MsgFire{
+	optional float x = 1;
+    optional float y = 2;
+    optional float z = 3;
+    optional float ex = 4;
+    optional float ey = 5;
+    optional float ez = 6;
+   
+    //服务端传递的时候填写
+    optional string id = 7; //坦克id(玩家id)
+}
+//击中协议
+message MsgHit{
+	//击中谁
+    optional string targetId = 1;
+    //击中点（给服务端判断作弊用，暂留）
+    optional float x = 2;
+    optional float y = 3;
+    optional float z = 4;
+    //服务端传递的时候填写
+    optional string id = 5; //坦克id(玩家id)
+    optional float hp = 6; //被击中坦克的血量
+    optional float damage = 7; //收到的伤害
+}
+
+//SyncMsg  同步协议 ================================结束=====================================
+
+//RoomMsg  房间协议 ================================开始=====================================
+//查询战绩协议
+message MsgGetAchieve
+{
+    //服务端返回
+    optional int32 win = 1;
+    optional int32 lost = 2;
+}
+
+//房间信息数组项
+message RoomInfo
+{
+    optional int32 id = 1; //房间id
+    optional int32 count = 2; //人数
+    optional int32 status = 3; //状态 0 - 准备中  1 - 战斗中
+}
+
+//请求房间列表协议
+message MsgGetRoomList 
+{
+    //服务端返回
+    repeated RoomInfo rooms = 1;
+}
+
+//创建房间协议
+message MsgCreateRoom 
+{
+    //服务端返回
+    optional int32 result = 1;
+}
+
+//进入房间协议
+message MsgEnterRoom 
+{
+    //客户端发
+    optional int32 id = 1;
+    //服务端回
+    optional int32 result = 2;
+}
+
+//玩家信息
+message PlayerInfo
+{
+    optional string id = 1; //账号
+    optional int32 camp = 2; //阵营
+    optional int32 win = 3; //胜利数
+    optional int32 lost = 4; //失败数
+    optional int32 isOwner = 5; //是否是房主
+}
+//获取房间信息协议
+message MsgGetRoomInfo 
+{
+    //服务端返回
+    repeated PlayerInfo players = 1;
+}
+
+//退出房间协议
+message MsgLeaveRoom 
+{
+    //服务端回
+    optional int32 result = 1;
+}
+
+//开战协议
+message MsgStartBattle 
+{
+    //服务端回
+    optional int32 result = 1;
+}
+
+//RoomMsg  房间协议 ================================结束=====================================
+
+//Notepad  记事本协议 ===============================开始====================================
+
+//获得记事本内容协议
+message MsgGetText
+{
+    //服务端回
+    optional string text = 1;
+}
+
+//保存记事本内容协议
+message MsgSaveText 
+{
+    //客户端发
+    optional string text = 1;
+    optional int32 result = 2;
+}
+//Notepad  记事本协议 ===============================结束====================================
+
+//LoginMsg 登录注册协议 =============================开始====================================
+
+//注册协议
+message MsgRegister 
+{
+    //客户端发
+    optional string username = 1;
+    optional string password = 2;
+    //服务端返回（1-成功，0-失败）
+    optional int32 result = 3;
+}
+
+//登录协议
+message MsgLogin 
+{
+    //客户端发
+    optional string username = 1;
+    optional string password = 2;
+    //服务端返回（1-成功，0-失败）
+    optional int32 result = 3;
+}
+
+//踢下线协议
+message MsgKick 
+{
+    //原因（1 - 账户多人登录）
+    optional int32 reason = 1;
+}
+
+//LoginMsg 登录注册协议 =============================结束====================================
+
+//BattleMsg 战斗协议 ==============================开始======================================
+
+//移动协议（测试用)
+message MsgMove 
+{
+    optional int32 x = 1;
+    optional int32 y = 2;
+    optional int32 z = 3;
+    //optional TransformComponent transform;
+    optional float ox = 4;
+    optional float oy = 5;
+    optional float tx = 6;
+    optional float ty = 7;
+}
+
+
+//坦克信息
+message TankInfo
+{
+    optional string id = 1; //玩家id
+    optional int32 camp = 2; //阵营
+    optional float hp = 3; //生命值
+    optional float att = 4; //攻击力
+    optional float def = 5; //防御值
+
+    optional float x = 6; //位置
+    optional float y = 7;
+    optional float z = 8;
+    optional float ex = 9; //旋转
+    optional float ey = 10;
+    optional float ez = 11;
+}
+
+//进入战场协议(服务端推送)
+message MsgEnterBattle 
+{
+    //服务端返回
+    repeated TankInfo tanks = 1;
+    optional int32 mapId = 2; //地图id  目前只有一张，暂无实际意义
+    optional int32 result = 3;
+}
+//战斗结果协议(服务端推送)
+message MsgBattleResult 
+{
+    //服务端回
+    optional int32 winCamp = 1; //获胜的阵营 0 无； 1 红； 2 蓝
+}
+
+//退出战斗协议(主动、或者掉线）
+message MsgLeaveBattle 
+{
+    //服务端回
+    optional string id = 1; //掉线的玩家id（or username)
+}
+
+//战斗协议结束==============================================================================
+
+
+enum Module {
+	INVALID_MODELUE = 0;
+	BASE = 1;
+	GM = 2;
+	NOTICE = 3;
+	
+	// ------------------业务功能模块（101开始）---------------------
+	LOGIN = 101;
+	PLAYER = 102;
+	SCENE = 103;
+	ACTIVITY = 104;
+	SKILL = 105;
+	CHAT = 106;
+	
+	
+	
+}
+
+enum Cmd {
+	INVALID_CMD = 0;
+	
+	GuestLoginReq = 1; //游客登录协议
+	GuestLoginRes = 2;
+
+	UserLoginReq = 3; //用户登录协议
+	UserLoginRes = 4;
+
+	SelectPlayerReq = 5; //选角协议
+	SelectPlayerRes = 6;
+
+	RuckSackReq = 7; //背包协议
+	RuckSackRes = 8;
+
+	PutOnEquipmentReq = 9; //穿戴装备
+	PutOnEquipmentRes = 10;
+
+		
+	SellGoodsReq = 11; //物品出售
+	SellGoodsRes = 12;
+
+	BuyGoodsWithCoinReq = 13; //购买物品
+	BuyGoodsWithCoinRes = 14; //
+
+	EnterSceneReq = 15; //进入地图
+	EnterSceneRes = 16; 
+
+	NavToPointReq = 17; //a星寻路
+	NavToPointRes = 18;
+	//AStarSyncRes = 19; //同步协议 test
+
+	JoyStickOptReq = 19; //遥感
+	JoyStickOptRes = 20;
+
+	//攻击
+	ePlayerAttackReq = 21;
+	ePlayerAttackRes = 22;
+
+	XL_PlayerSync = 998;//降龙同步玩家协议  降龙新增
+
+	ServerEventUserOpt = 999; //同步玩家寻路协议
+	ServerEventAOIMonster = 1000; //同步怪物协议
+
+	MonsterSyncToClient = 1001; //同步怪物协议
+	MonsterNavToPoint = 1002; //同步怪物导航
+
+	eServerEventAOIPlayer = 1003;
+	ePlayerSyncToClient = 1004;
+
+	
+}
+
+//用户登录协议
+message ReqUserLogin{
+	required string uname = 1;
+	required string upwd = 2;
+}
+message ResUserLogin{
+	required int32 status = 1; //状态码
+	optional AccountInfoComponent uinfo = 2; //用户账户信息
+}
+
+// 游客登录协议
+message ReqGuestLogin {
+	required string guestKey = 1;
+}
+
+
+message AccountInfo {
+	required string unick = 1; // 昵称
+	// required int32 uface = 2;
+	// required int32 usex = 3;
+	// required int32 uvip = 4;
+}
+
+message ResGuestLogin {
+	required int32 status = 1; // 状态码
+	optional AccountInfoComponent uinfo = 2; // 用户账号信息
+}
+
+//选角协议
+message ReqSelectPlayer{
+	required string name = 1;
+    required int32 job = 2;
+    required string platform = 3;
+}
+//添加一个装备对象
+message EquipmentProp{
+	required int32 weaponType = 1;
+	required int32 amorType = 2;
+}
+//添加一个基本属性对象（exp、mp、hp、level、money、coin）
+// message PlayerInfo {
+//     required int64 exp = 1;
+//     required int32 level = 2;
+//     required int32 HP = 3;
+//     required int32 MP = 4;
+// 	required int64 money = 5;
+// 	required int64 coin = 6;
+// }
+message ResSelectPlayer{
+	required int32 status = 1;
+	required EquipmentPropComponent eProp = 2; //玩家是否存在装备（可选）改成必选
+	required PlayerInfoComponent playerInfo = 3;
+}
+
+//背包协议
+message ReqRuckSack{
+	//空包，发协议设null就行，查询所有背包内的物品
+}
+message RuckSackItem{ // 
+	required int32 itemType = 1;
+	required int32 count = 2;
+}
+message ResRuckSack{
+	required int32 status = 1;
+	repeated RuckSackItem items = 2; //背包内的物品
+}
+
+//穿戴装备
+message ReqPutOnEquipment{
+	required EquipmentPropComponent eProp = 1;
+}
+message ResPutEquipment{
+	required int32 status = 1; //状态码
+}
+
+//物品出售
+message ReqSellGoods{
+	required int32 itemType = 1;
+	required int32 count = 2;
+}
+message ResSellGoods{
+	required int32 status = 1;
+	optional int32 itemType = 2; //出售失败时不需要这两个数据
+	optional int32 count = 3;
+}
+
+//购买物品
+message ReqBuyGoodsWithCoin{
+ 	required int32 itemType = 1;
+	required int32 count = 2;
+}
+message ResBuyGoodsWithCoin{
+	required int32 status = 1;
+	optional int32 itemType = 2; //购买失败时不需要这两个数据
+	optional int32 count = 3;
+}
+
+//逻辑服进入地图场景
+message ReqEnterScene{
+	//空包进图
+}
+message ResEnterScene{
+	required int32 status = 1;
+	//optional EntityInfo info = 2; //玩家的游戏信息
+	optional ShapeComponent shapInfo = 2; //玩家的形状信息
+	optional TransformComponent transformInfo = 3; //玩家的位置信息
+}
+
+//已改成组件化compenent
+message EntityInfo{
+	required int32 hp = 1;
+	required int32 mp = 2;
+	required int32 job = 3;
+	required int32 attack = 4;
+	required int32 def = 5;
+	required int32 maxHp = 6;
+	required int32 maxMp = 7;
+	required int64 exp = 8; //经验值改成long类型
+	required int32 height = 9;;
+	required float speed = 10;
+	required float R = 11;
+	required float x = 12;
+	required float y = 13;
+	required float z = 14;
+}
+
+//ComponentData
+message PlayerInfoComponent{
+	 required int64 exp = 1;
+    required int32 level = 2;
+    required int32 HP = 3;
+    required int32 MP = 4;
+	required int64 money = 5;
+	required int64 coin = 6;
+	required int32 job = 7;
+	required int32 attack = 8;
+	required int32 def = 9;
+	required int32 maxHp = 10;
+	required int32 maxMp = 11;
+	required float speed = 12;
+	required string position = 13;
+	required string name = 14;
+}
+message EquipmentPropComponent{
+	required int32 weaponType = 1;
+	required int32 amorType = 2;
+}
+//改造成降龙的本地全局变量
+message AccountInfoComponent{
+	required string unick = 1;
+	required int32 level = 2;
+	required int32 job = 3;
+	required string position = 4;
+	// required int32 uface;
+	// required int32 usex;
+	// required int32 uvip;
+}
+message ShapeComponent{
+	required float height = 1;
+	required float R = 2;
+}
+
+message Vector3Component{
+	required float x = 1;
+	required float y = 2;
+	required float z = 3;
+}
+message TransformComponent{
+	required Vector3Component position = 1;
+	required float eulerAngleY = 2;
+}
+
+//a星寻路
+message GameEvent{
+	required int32 type = 1;
+	//optional int32 x = 2; 定点数解决方法
+	//optional int32 y = 3;
+
+	optional float x = 2; 
+	optional float y = 3;
+	optional int64 playerId = 4;
+}
+
+message ReqNavToPoint{
+	required GameEvent opt = 1;
+}
+message ResNavToPoint{
+	required int32 status = 1;
+}
+message ResAStarSync{ //test 同步协议
+	required int32 state = 1;
+	optional TransformComponent transformInfo = 2;
+}
+
+//同步协议
+message ServerEventNav{
+	required GameEvent optType = 1;
+}
+
+
+//遥感
+message ReqJoyStickOpt{
+	required GameEvent optType = 1;
+}
+message ResJoyStickOpt{
+	required int32 status = 1;
+}
+
+//怪物同步协议
+message ServerEventMonster{
+	repeated MonsterEntity monsters = 1;
+}
+//怪物entity
+message MonsterEntity{
+	
+    required int64 monsterId = 1; //怪物id号
+    required int32 state = 2; //怪物状态
+    required MonsterInfoComponent monsterInfo = 3; //怪物基本信息组件
+    required TransformComponent transformInfo = 4; //位置信息组件
+
+    //可选
+    //required ShapeComponent shapeInfo = 5; //形状组件
+    //required AStarComponent aStarComponent = 6; //a星组件
+}
+//怪物基本信息组件
+message MonsterInfoComponent{
+	required int64 type = 1; //怪物类型 （id）
+	required int32 hp = 2; //血量
+	required int32 maxHp = 3; //最大血量
+	required int32 attack = 4; //怪物的攻击力
+	required int32 def = 5; //怪物的防御力
+	required int64 exp = 6; //杀死怪物可获取的经验
+    required float speed = 7; //怪物的移动速度
+}
+
+//怪物同步
+message MonsterSyncToClientMsg {
+	required int32 state = 1;
+	required int64 monsterId = 2;
+	required TransformComponent transformInfo = 3;
+}
+message MonsterNavToPointMsg{
+	required int64 monsterId = 1;
+	required Vector3Component transformInfo = 2;
+}
+
+//多玩家同步
+message PlayerEntity{
+	required int64 playerId = 1;
+	required int32 state = 2;
+	required AccountInfoComponent accountInfo = 3;
+	required GhostPlayerInfoComponent ghostInfo = 4;
+	required EquipmentPropComponent EquipmentInfo = 5;
+	required TransformComponent transformInfo = 6;
+	optional PrivatePlayerInfoComponent playerInfo = 7;
+}
+message ServerEventAOIPlayer{
+	repeated PlayerEntity ghostPlayers = 1;
+	required int64 playerId = 2;
+}
+//公共镜像数据组件
+message GhostPlayerInfoComponent{
+	required int32 level = 1;
+	required int32 job = 2;
+	required float speed = 3;
+}
+//私有数据组件
+message PrivatePlayerInfoComponent{
+	required int64 exp = 1;
+	required int32 HP = 2;
+	required int32 Mp = 3;
+	required int32 coin = 4;
+	required int32 money = 5;
+	required int32 attack = 6;
+	required int32 def = 7;
+	required int32 maxHp = 8;
+	required int32 maxMp = 9;
+}
+
+//多玩家同步
+message PlayerSyncToClient {
+	required int32 state = 1;
+	required int64 playerId = 2;
+	required TransformComponent transformInfo = 3;
+}
+
+//请求和响应共用
+message PlayerSync {
+	required int32 state = 1;
+	required int64 playerId = 2;
+	required TransformComponent transformInfo = 3;
+}
+
+message ServerEventUserOptMsg {
+	required GameEvent opt = 1;
+	required int32 state = 2; // 状态
+	required TransformComponent transformInfo = 3;
+}
+
+//攻击
+message ReqPlayerAttack{
+	required GameEvent opt = 1;
+}
+message ResPlayerAttack{
+	required int32 status = 1;
+}
