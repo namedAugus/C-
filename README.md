@@ -26,7 +26,7 @@ create table player(
 	def float comment '玩家防御力',
 	x float comment '玩家x轴位置',
 	y float comment '玩家y轴位置',
-    z float comment '玩家z轴位置'
+    z float comment '玩家z轴位置',
 	job varchar(10) comment '玩家职业',
 	`data` varchar(255) comment '玩家数据(如装备、金币、皮肤)'
 );
